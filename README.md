@@ -31,11 +31,14 @@ JSON-based commands, debug APIs, and monitor responses in real time.
 
 ## 🗂 Project Structure
 
-    tk_ws_http_client/
-    ├── main.py
-    ├── requirements.txt
-    ├── README.md
-    ├── default_commands.json
+	tk_ws_http_client_refactored/
+	├── main.py
+	├── ui.py
+	├── ws_client.py
+	├── http_client.py
+	├── utilities.py
+	├── requirements.txt
+	└── README.md
 
 ------------------------------------------------------------------------
 
