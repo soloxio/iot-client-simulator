@@ -21,7 +21,7 @@ DEFAULT_COMMANDS = [
         "name": "Subscribe",
         "payload": {
             "action": "subscribe",
-            "channel": "events",
+            "channel": "notifications",
         },
     },
     {
@@ -32,15 +32,21 @@ DEFAULT_COMMANDS = [
         },
     },
     {
-        "name": "HTTP POST sample",
+        "name": "Create Notification",
         "payload": {
             "method": "POST",
-            "path": "/api/commands",
+            "path": "/rest/notifications/latest/notification",
             "headers": {
                 "Content-Type": "application/json",
+                "Authorization": "Basic REPLACE_WITH_YOUR_CREDENTIALS",
             },
             "body": {
-                "action": "status",
+                "userKey": "demo-user-key",
+                "title": "New IoT Event",
+                "description": "IoT device triggered a notification",
+                "iconUrl": "http://localhost:8000/icon.png",
+                "itemUrl": "http://localhost:8000/events/123",
+                "itemId": "iot-event-123",
             },
             "timeout": 10,
         },
