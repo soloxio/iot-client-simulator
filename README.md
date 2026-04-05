@@ -109,3 +109,111 @@ Example:
 ## 📄 License
 
 Free to use and modify.
+
+------------------------------------------------------------------------
+
+## 🔔 Confluence Notification API – Comparison & Mismatches
+
+This section documents the relevant Confluence Notification REST API
+specification and how the current implementation aligns (or does not
+align) with it.
+
+### Confluence Notification API – Key Endpoints
+
+| Method   | Endpoint                                                       | Purpose                    |
+|----------|----------------------------------------------------------------|----------------------------|
+| `GET`    | `/rest/mywork/latest/status/notification/count`                | Get unread notification count |
+| `GET`    | `/rest/notifications/latest/notification`                      | List notifications         |
+| `POST`   | `/rest/notifications/latest/notification`                      | Create a notification      |
+| `DELETE` | `/rest/notifications/latest/notification/{id}`                 | Delete a notification      |
+| `PUT`    | `/rest/notifications/latest/notification/{id}/read`            | Mark notification as read  |
+
+### Notification Object Schema (POST body)
+
+``` json
+{
+  "userKey":     "target-user-key",
+  "title":       "Notification title",
+  "description": "Notification body / description",
+  "iconUrl":     "https://example.com/icon.png",
+  "itemUrl":     "https://example.com/item",
+  "itemId":      "unique-item-id"
+}
+```
+
+`userKey` is required; all other fields are optional but recommended.
+
+### Authentication
+
+All notification endpoints require authentication via an
+`Authorization` header:
+
+``` http
+Authorization: Basic REPLACE_WITH_YOUR_CREDENTIALS
+```
+
+OAuth tokens are also supported.
+
+### Current Implementation vs. Confluence Notification API
+
+| # | Requirement                                      | Status | Notes |
+|---|--------------------------------------------------|--------|-------|
+| 1 | HTTP `POST /rest/notifications/latest/notification` preset | ✅ Fixed | **"Create Notification"** default command now targets the correct path and includes required body fields (`userKey`, `title`, `description`, `iconUrl`, `itemUrl`, `itemId`). |
+| 2 | `Authorization` header in HTTP presets           | ✅ Fixed | **"Create Notification"** preset now includes `Authorization: Basic` header. |
+| 3 | WebSocket subscribe to `notifications` channel   | ✅ Fixed | **"Subscribe"** command now uses `"channel": "notifications"` instead of the former generic `"channel": "events"`. |
+| 4 | HTTP `GET /rest/notifications/latest/notification` preset | ❌ Missing | No default command for listing notifications. Use the HTTP base URL + manual JSON to call this endpoint. |
+| 5 | HTTP `GET /rest/mywork/latest/status/notification/count` preset | ❌ Missing | No default command for reading the unread-count endpoint. |
+| 6 | HTTP `DELETE /rest/notifications/latest/notification/{id}` preset | ❌ Missing | No default command for deleting a notification. |
+| 7 | HTTP `PUT /rest/notifications/latest/notification/{id}/read` preset | ❌ Missing | No default command for marking a notification as read. |
+
+### Remaining Mismatches
+
+Items 4 – 7 in the table above are not covered by a one-click default
+command.  You can still exercise all of these endpoints manually by
+entering the appropriate JSON in the **Command / Request** text box.
+
+Examples:
+
+**List notifications**
+
+``` json
+{
+  "method": "GET",
+  "path": "/rest/notifications/latest/notification",
+  "headers": { "Authorization": "Basic REPLACE_WITH_YOUR_CREDENTIALS" },
+  "timeout": 10
+}
+```
+
+**Get unread notification count**
+
+``` json
+{
+  "method": "GET",
+  "path": "/rest/mywork/latest/status/notification/count",
+  "headers": { "Authorization": "Basic REPLACE_WITH_YOUR_CREDENTIALS" },
+  "timeout": 10
+}
+```
+
+**Delete notification**
+
+``` json
+{
+  "method": "DELETE",
+  "path": "/rest/notifications/latest/notification/{id}",
+  "headers": { "Authorization": "Basic REPLACE_WITH_YOUR_CREDENTIALS" },
+  "timeout": 10
+}
+```
+
+**Mark notification as read**
+
+``` json
+{
+  "method": "PUT",
+  "path": "/rest/notifications/latest/notification/{id}/read",
+  "headers": { "Authorization": "Basic REPLACE_WITH_YOUR_CREDENTIALS" },
+  "timeout": 10
+}
+```
